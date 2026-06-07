@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/css/diner.css">
+  <script src="/js/app.js"></script>
+  <script defer src="/js/rain.js"></script>
+  <script defer src="/js/analytics.min.js"></script>
+</head>
+<body>
+  <canvas class="rain-canvas" aria-hidden="true"></canvas>
+  <div class="container">
+    <h2>Login</h2>
+    <div id="error" class="error"></div>
+    <form onsubmit="handleLogin(event)">
+      <label>Username:</label>
+      <input type="text" id="username" required>
+      <label>Password:</label>
+      <input type="password" id="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <div class="info">
+      Don't have an account? <a href="/signup">Register here</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Panel</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/adminCheck.js"></script>
+    <script src="/js/loadinfo.js"></script>
+    <script>
+        window.onload = function() {
+            checkAdminAccess();
+            initAdminPage();
+        }
+    </script>
+</head>
+<body>
+    <div id="adminContent" style="display: none;" class="container">
+        <h1>Control Panel</h1>
+        <p>Welcome to the control panel. This page contains sensitive information.</p>
+        
+        <div class="property-flag flag">
+            <!-- This will be ppulated by adminCheck.js -->
+        </div>
+
+        <div class="system-info">
+            <h2>System Information</h2>
+            <p>Database Status: <span style="color: #10b981">Connected</span></p>
+            <p>Total Users: <span id="userCount">Loading...</span></p>
+            <p>Last Updated: <span id="lastUpdated">Loading...</span></p>
+        </div>
+    </div>
+</body>
+</html> 

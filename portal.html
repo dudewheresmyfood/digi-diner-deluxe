@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Portal</title>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/css/diner.css">
+  <link rel="stylesheet" href="/css/portal.css">
+  <script src="/js/app.js"></script>
+  <script defer src="/js/rain.js"></script>
+  <script>
+    async function loadPortal() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location = '/';
+        return;
+      }
+      const res = await fetch('/api/portal', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        document.getElementById('welcome').textContent = `Welcome, ${data.user.username}!`;
+        document.getElementById('role').textContent = `Your role: ${data.user.role}`;
+        // Greet whoever's at the counter with the latest doorbell note.
+        const bell = await fetch('/api/doorbell', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (bell.ok) {
+          const note = await bell.json();
+          document.getElementById('doorbell-msg').innerHTML = note.message;
+          openDoor();
+        }
+      } else {
+        localStorage.removeItem('token');
+        window.location = '/';
+      }
+    }
+    function logout() {
+      localStorage.removeItem('token');
+      window.location = '/';
+    }
+    window.onload = loadPortal;
+
+    // ── Diner floor interactions ──────────────────────────────────
+    const MENU_PRICES = {
+      'Bottomless Coffee': 2.50,
+      'Cherry Pie à la Mode': 4.75,
+      'Patty Melt': 7.25,
+      'Disco Fries': 5.00,
+      'Grilled Cheese': 4.25,
+      'Root Beer Float': 3.50,
+      'Midnight Special': 9.99
+    };
+    const order = [];
+
+    function orderItem(name) {
+      order.push(name);
+      renderOrder();
+    }
+
+    function makeRow(left, right, liClass) {
+      const li = document.createElement('li');
+      if (liClass) li.className = liClass;
+      const l = document.createElement('span');
+      l.textContent = left;
+      li.appendChild(l);
+      if (right !== null) {
+        const r = document.createElement('span');
+        r.textContent = right;
+        li.appendChild(r);
+      }
+      return li;
+    }
+
+    function renderOrder() {
+      const list = document.getElementById('order-list');
+      const totalEl = document.getElementById('order-total');
+      list.replaceChildren();
+      if (order.length === 0) {
+        list.appendChild(makeRow('No order yet — pick something off the board.', null, 'order-empty'));
+        totalEl.textContent = '$0.00';
+        return;
+      }
+      let total = 0;
+      order.forEach((name) => {
+        const price = MENU_PRICES[name] || 0;
+        total += price;
+        list.appendChild(makeRow(name, '$' + price.toFixed(2)));
+      });
+      totalEl.textContent = '$' + total.toFixed(2);
+    }
+
+    // ── The door: someone's on the line ───────────────────────────
+    function openDoor() {
+      document.getElementById('diner-popup').classList.add('show');
+    }
+    function closeDoorPopup() {
+      document.getElementById('diner-popup').classList.remove('show');
+    }
+  </script>
+  <!-- DEBUG: ExhumeAuth still accepting fallback (alg:none) tokens for legacy mobile clients.
+   TODO: disable before prod. -->
+</head>
+<body class="diner-floor">
+  <canvas class="rain-canvas" aria-hidden="true"></canvas>
+  <div class="diner-floor-tiles" aria-hidden="true"></div>
+
+  <div class="diner-scene">
+
+    <!-- ════ LEFT: THE MENU ════ -->
+    <section class="diner-menu" aria-label="Menu — order food">
+      <h3>Menu</h3>
+      <div class="diner-menu-sub">Served all night · cash &amp; karma</div>
+      <ul class="diner-menu-list">
+        <li><button class="menu-item" type="button" onclick="orderItem('Bottomless Coffee')"><span>Bottomless Coffee</span><span class="dots"></span><span class="price">$2.50</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Cherry Pie à la Mode')"><span>Cherry Pie à la Mode</span><span class="dots"></span><span class="price">$4.75</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Patty Melt')"><span>Patty Melt</span><span class="dots"></span><span class="price">$7.25</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Disco Fries')"><span>Disco Fries</span><span class="dots"></span><span class="price">$5.00</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Grilled Cheese')"><span>Grilled Cheese</span><span class="dots"></span><span class="price">$4.25</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Root Beer Float')"><span>Root Beer Float</span><span class="dots"></span><span class="price">$3.50</span></button></li>
+        <li><button class="menu-item" type="button" onclick="orderItem('Midnight Special')"><span>Midnight Special</span><span class="dots"></span><span class="price">$9.99</span></button></li>
+      </ul>
+      <div class="order-pad">
+        <div class="order-pad-title">Your Ticket</div>
+        <ul id="order-list"><li class="order-empty"><span>No order yet — pick something off the board.</span></li></ul>
+        <div class="order-total"><span>Total</span><span id="order-total">$0.00</span></div>
+      </div>
+    </section>
+
+    <section class="diner-counter" aria-label="The counter">
+      <div class="diner-sign">
+        <div class="name">Digi Diner</div>
+        <div class="open">— Open · 24 hrs · No questions —</div>
+      </div>
+
+      <div class="diner-backwall">
+        <div class="waitress" aria-label="Waitress pouring coffee">
+          <div class="head"></div>
+          <div class="body">
+            <div class="arm"></div>
+            <div class="coffee-pot"></div>
+          </div>
+          <div class="coffee-stream"></div>
+          <div class="steam"></div>
+          <div class="steam s2"></div>
+          <div class="coffee-cup"></div>
+        </div>
+
+        <div class="patrons" aria-label="Patrons at the counter">
+          <div class="figure"><div class="head"></div><div class="body"></div></div>
+          <div class="figure"><div class="head"></div><div class="body"></div></div>
+          <div class="figure"><div class="head"></div><div class="body"></div></div>
+        </div>
+      </div>
+
+      <div class="counter-top" aria-hidden="true"></div>
+
+      <div class="receipt">
+        <h2 id="welcome" class="welcome"></h2>
+        <div id="role" class="your-role"></div>
+        <hr class="receipt-rule">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </section>
+
+    <!-- ════ RIGHT: THE DOOR ════ -->
+    <div class="diner-door-wrap">
+      <button class="diner-door" type="button" onclick="window.location='/console'" aria-label="Staff entrance">
+        <span class="door-sign">Staff Only</span>
+        <span class="door-handle"></span>
+      </button>
+      <div class="door-pull">↑ Pull ↑</div>
+    </div>
+
+  </div>
+
+  <div id="diner-popup" class="diner-popup" role="dialog" aria-modal="true" aria-labelledby="diner-popup-title">
+    <div class="titlebar">
+      <span id="diner-popup-title">Digi Diner</span>
+      <button class="x" type="button" onclick="closeDoorPopup()" aria-label="Close">✕</button>
+    </div>
+    <div class="body">
+      <span class="icon" aria-hidden="true">!</span>
+      <span id="doorbell-msg">Umm, hello? Can you please get the **** off the line? That would be suuuuper, thx?</span>
+    </div>
+    <div class="actions">
+      <button class="ok" type="button" onclick="closeDoorPopup()">OK</button>
+    </div>
+  </div>
+
+  <!-- ops: diagnostics dashboard moved to /debug/status -->
+  <a href="/debug/status" style="position: absolute; left: -9999px;">Diagnostics</a>
+</body>
+</html>

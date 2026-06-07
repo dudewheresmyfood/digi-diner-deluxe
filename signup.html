@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/css/diner.css">
+  <script defer src="/js/rain.js"></script>
+  <script>
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.ok) {
+        window.location = '/';
+      } else {
+        const data = await res.json();
+        document.getElementById('error').textContent = data.error || 'Registration failed.';
+      }
+    }
+  </script>
+  <!-- staff console UI is served at /console -->
+</head>
+<body>
+  <canvas class="rain-canvas" aria-hidden="true"></canvas>
+  <div class="container">
+    <h2>Register</h2>
+    <div id="error" class="error"></div>
+    <form onsubmit="handleRegister(event)">
+      <label>Username:</label>
+      <input type="text" id="username" required>
+      <label>Password:</label>
+      <input type="password" id="password" required>
+      <button type="submit">Register</button>
+    </form>
+    <div class="info">
+      Already have an account? <a href="/">Login here</a>
+    </div>
+  </div>
+</body>
+</html>
