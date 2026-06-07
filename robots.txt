@@ -2,8 +2,4 @@ User-agent: *
 Disallow: /console
 Disallow: /api/directory
 Disallow: /api/logs
-Disallow: /debug/
-Disallow: /backup/
 Allow: /
-
-Sitemap: http://localhost:3000/sitemap.xml
