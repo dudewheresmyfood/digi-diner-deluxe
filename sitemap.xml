@@ -4,6 +4,4 @@
   <url><loc>http://localhost:3000/signup</loc><changefreq>monthly</changefreq></url>
   <url><loc>http://localhost:3000/portal</loc><changefreq>daily</changefreq></url>
   <url><loc>http://localhost:3000/console</loc><changefreq>daily</changefreq></url>
-  <!-- internal: do not index -->
-  <url><loc>http://localhost:3000/debug/status</loc><changefreq>hourly</changefreq></url>
 </urlset>
