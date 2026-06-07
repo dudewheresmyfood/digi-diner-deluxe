@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigiDiner Deluxe — Today's Menu</title>
+  <style>
+    body { font-family: 'Courier New', monospace; background: #1a1a2e; color: #e0e0e0; margin: 0; padding: 2rem; }
+    h1 { color: #f5a623; letter-spacing: 0.1em; }
+    .section-title { color: #7ecfa4; border-bottom: 1px solid #333; padding-bottom: 0.25rem; margin-top: 2rem; }
+    .menu-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+    .menu-card { background: #22223b; border: 1px solid #44475a; border-radius: 6px; padding: 1rem; min-width: 180px; }
+    .menu-card h3 { margin: 0 0 0.5rem; color: #f5a623; }
+    .price { font-size: 1.1em; color: #7ecfa4; font-weight: bold; }
+    .entropy-badge { font-size: 0.75em; color: #888; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>DigiDiner Deluxe</h1>
+  <p>Welcome to the finest digital diner this side of the abyssal vat.</p>
+
+  <h2 class="section-title">Burgers</h2>
+  <div class="menu-grid" id="burger-list">
+    <% burgers.forEach(function(burger) { %>
+      <div class="menu-card">
+        <h3><%- burger.name %></h3>
+        <p><%= burger.pattyCount %> patty<%= burger.pattyCount !== 1 ? 's' : '' %></p>
+        <p class="entropy-badge">entropy: <%= burger.pattyEntropy %></p>
+        <p class="entropy-badge">ketchup ratio: <%= burger.ketchupRatio %></p>
+        <p class="price">$<%= burger.price.toFixed(2) %></p>
+      </div>
+    <% }); %>
+  </div>
+
+  <h2 class="section-title">Shakes</h2>
+  <div class="menu-grid" id="shake-list">
+    <% shakes.forEach(function(shake) { %>
+      <div class="menu-card">
+        <h3><%- shake.name %></h3>
+        <p><%= shake.oz %> oz &mdash; <%= shake.swirls %> swirls</p>
+      </div>
+    <% }); %>
+  </div>
+
+  <script src="/js/menu.js"></script>
+</body>
+</html>
